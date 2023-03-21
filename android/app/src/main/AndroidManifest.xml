@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
    <application
-        android:label="chat_gpt_flutter"
+        android:label="EA Legal chatbot"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -12,7 +12,7 @@ class TextCard extends StatelessWidget {
     return Container(
       color: Colors.deepPurpleAccent.withOpacity(0.1),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             Row(
@@ -29,7 +29,7 @@ class TextCard extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     textData.text,
@@ -38,7 +38,7 @@ class TextCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -55,7 +55,7 @@ class TextCard extends StatelessWidget {
                     child: const Icon(Icons.copy, size: 28)),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -71,7 +71,7 @@ class MyTextCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -86,7 +86,7 @@ class MyTextCard extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               textData.text,

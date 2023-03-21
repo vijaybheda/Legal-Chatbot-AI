@@ -33,7 +33,7 @@ class ChatTextView extends GetView<ChatTextController> {
             controller.state.value == ApiState.loading
                 ? const Center(child: CircularProgressIndicator())
                 : const SizedBox(),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             SearchTextFieldWidget(
                 color: Colors.deepPurpleAccent.withOpacity(0.8),
                 textEditingController: controller.searchTextController,
