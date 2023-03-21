@@ -1,0 +1,4 @@
+#Tue Mar 21 09:55:23 IST 2023
+base.0=D\:\\VijayBheda\\FlutterProjects\\chat_gpt_flutter\\build\\app\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
+renamed.0=classes.dex
+path.0=classes.dex

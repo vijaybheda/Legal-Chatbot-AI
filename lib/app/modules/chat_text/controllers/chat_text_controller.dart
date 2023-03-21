@@ -1,0 +1,140 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+
+import '../../../common/headers.dart';
+import '../../../model/text_completion_model.dart';
+
+class ChatTextController extends GetxController {
+  //TODO: Implement ChatTextController
+
+  @override
+  void onInit() {
+    super.onInit();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+  }
+
+  List<TextCompletionData> messages = [];
+
+  var state = ApiState.notFound.obs;
+
+  getTextCompletion(String query) async {
+    addMyMessage();
+
+    state.value = ApiState.loading;
+
+    // if () {
+    //   messages.insert(i, choices[i]);
+    //   return;
+    // }
+    try {
+      bool isLegalQuestion = true;
+      Map<String, dynamic> rowParams0 = {
+        "model": "text-davinci-003",
+        "prompt": 'can you check type of query: $query',
+        "max_tokens": 150,
+        "temperature": 0.5,
+      };
+
+      final encodedParams0 = json.encode(rowParams0);
+
+      final response0 = await http.post(
+        Uri.parse(endPoint("completions")),
+        body: encodedParams0,
+        headers: headerBearerOption(OPEN_AI_KEY),
+      );
+      print("Response  body     ${response0.body}");
+      if (response0.statusCode == 200) {
+        // messages =
+        //     TextCompletionModel.fromJson(json.decode(response.body)).choices;
+        //
+        String _body = response0.body;
+        if (_body.contains('not a legal') || !_body.contains('criminal')) {
+          isLegalQuestion = false;
+        }
+        if (!isLegalQuestion) {
+          // String a =
+          //     '{"id":"cmpl-6wbwIXMvw3GmDBHB2w0FMGtUfCMIX","object":"text_completion","created":1679426882,"model":"text-davinci-003","choices":[{"text":"\n\nThis is not a type of query.","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":8,"completion_tokens":10,"total_tokens":18}}';
+          Map<String, dynamic> _data = json.decode(_body);
+          _data['choices'][0]['text'] =
+              "'Unfortunately, this is not a legal question and so I cannot provide an answer. If you have a legal question, please provide more details so that I can help.'";
+          addServerMessage(TextCompletionModel.fromJson(_data).choices);
+          state.value = ApiState.success;
+          clearTextField();
+          return;
+        }
+      } else {
+        // throw ServerException(message: "Image Generation Server Exception");
+        state.value = ApiState.error;
+        clearTextField();
+      }
+
+      if (!isLegalQuestion) {
+        clearTextField();
+        return;
+      }
+      Map<String, dynamic> rowParams = {
+        "model": "text-davinci-003",
+        "prompt": 'Legal question: $query',
+        "max_tokens": 150,
+        "temperature": 0.5,
+      };
+
+      final encodedParams = json.encode(rowParams);
+
+      final response = await http.post(
+        Uri.parse(endPoint("completions")),
+        body: encodedParams,
+        headers: headerBearerOption(OPEN_AI_KEY),
+      );
+      print("Response  body     ${response.body}");
+      if (response.statusCode == 200) {
+        // messages =
+        //     TextCompletionModel.fromJson(json.decode(response.body)).choices;
+        //
+        addServerMessage(
+            TextCompletionModel.fromJson(json.decode(response.body)).choices);
+        state.value = ApiState.success;
+      } else {
+        // throw ServerException(message: "Image Generation Server Exception");
+        state.value = ApiState.error;
+      }
+    } catch (e) {
+      print("Errorrrrrrrrrrrrrrr  ");
+    } finally {
+      // searchTextController.clear();
+      clearTextField();
+      update();
+    }
+  }
+
+  addServerMessage(List<TextCompletionData> choices) {
+    for (int i = 0; i < choices.length; i++) {
+      messages.insert(i, choices[i]);
+    }
+  }
+
+  addMyMessage() {
+    // {"text":":\n\nWell, there are a few things that you can do to increase","index":0,"logprobs":null,"finish_reason":"length"}
+    TextCompletionData text = TextCompletionData(
+        text: searchTextController.text, index: -999999, finish_reason: "");
+    messages.insert(0, text);
+  }
+
+  clearTextField() {
+    searchTextController.clear();
+  }
+
+  TextEditingController searchTextController = TextEditingController();
+}
