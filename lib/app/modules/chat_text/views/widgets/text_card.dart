@@ -16,7 +16,7 @@ class TextCard extends StatelessWidget {
         child: Column(
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   height: 40,
@@ -33,7 +33,13 @@ class TextCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     textData.text,
-                    style: const TextStyle(fontSize: 18),
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: textData.text
+                                .toString()
+                                .contains("this is not a legal question")
+                            ? Colors.redAccent
+                            : null),
                   ),
                 ),
               ],

@@ -1,9 +1,11 @@
+import 'package:chat_gpt_flutter/app_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'app/routes/app_pages.dart';
 
-void main() {
+Future<void> main() async {
+  await Get.put(AppStorage()).initStorage();
   runApp(const MyApp());
 }
 

@@ -38,8 +38,11 @@ class ChatTextView extends GetView<ChatTextController> {
                 color: Colors.deepPurpleAccent.withOpacity(0.8),
                 textEditingController: controller.searchTextController,
                 onTap: () {
-                  controller
-                      .getTextCompletion(controller.searchTextController.text);
+                  if (controller.searchTextController.text.isEmpty) {
+                    return;
+                  }
+                  controller.getTextCompletion(
+                      controller.searchTextController.text.trim());
                 }),
             const SizedBox(height: 20),
           ])),

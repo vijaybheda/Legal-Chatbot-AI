@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:chat_gpt_flutter/app_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -29,21 +30,18 @@ class ChatTextController extends GetxController {
 
   var state = ApiState.notFound.obs;
 
-  getTextCompletion(String query) async {
+  void getTextCompletion(String query) async {
     addMyMessage();
 
     state.value = ApiState.loading;
 
-    // if () {
-    //   messages.insert(i, choices[i]);
-    //   return;
-    // }
     try {
-      bool isLegalQuestion = true;
+      bool isLegalQuestion = false;
       Map<String, dynamic> rowParams0 = {
         "model": "text-davinci-003",
-        "prompt": 'can you check type of query: $query',
-        "max_tokens": 150,
+        // "prompt": 'can you check type of query: $query',
+        "prompt": "Determine the user's intend: $query",
+        "max_tokens": 200,
         "temperature": 0.5,
       };
 
@@ -54,21 +52,42 @@ class ChatTextController extends GetxController {
         body: encodedParams0,
         headers: headerBearerOption(OPEN_AI_KEY),
       );
-      print("Response  body     ${response0.body}");
+      print("Response body ${response0.body}");
       if (response0.statusCode == 200) {
         // messages =
         //     TextCompletionModel.fromJson(json.decode(response.body)).choices;
         //
-        String _body = response0.body;
-        if (_body.contains('not a legal') || !_body.contains('criminal')) {
-          isLegalQuestion = false;
+        String body = response0.body;
+        var appStorage = AppStorage();
+        List<String> keys =
+            appStorage.getAppConfig()?.filterKeywords?.toList() ??
+                [
+                  "legal",
+                  "action",
+                  "law",
+                  "disciplinary",
+                  "litigation",
+                  "rightful",
+                  "law procedure",
+                  "criminal",
+                  "police",
+                  "report",
+                  "court",
+                  "Indian Penal Code",
+                  "section"
+                ];
+        for (var mValue in keys) {
+          if (body.contains(mValue)) {
+            isLegalQuestion = true;
+            break;
+          }
         }
         if (!isLegalQuestion) {
           // String a =
           //     '{"id":"cmpl-6wbwIXMvw3GmDBHB2w0FMGtUfCMIX","object":"text_completion","created":1679426882,"model":"text-davinci-003","choices":[{"text":"\n\nThis is not a type of query.","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":8,"completion_tokens":10,"total_tokens":18}}';
-          Map<String, dynamic> _data = json.decode(_body);
+          Map<String, dynamic> _data = json.decode(body);
           _data['choices'][0]['text'] =
-              "'Unfortunately, this is not a legal question and so I cannot provide an answer. If you have a legal question, please provide more details so that I can help.'";
+              "Unfortunately, this is not a legal question and so I cannot provide an answer. If you have a legal question, please provide more details so that I can help.";
           addServerMessage(TextCompletionModel.fromJson(_data).choices);
           state.value = ApiState.success;
           clearTextField();
@@ -87,7 +106,7 @@ class ChatTextController extends GetxController {
       Map<String, dynamic> rowParams = {
         "model": "text-davinci-003",
         "prompt": 'Legal question: $query',
-        "max_tokens": 150,
+        "max_tokens": 200,
         "temperature": 0.5,
       };
 
