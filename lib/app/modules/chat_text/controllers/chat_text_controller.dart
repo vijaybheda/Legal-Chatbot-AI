@@ -9,7 +9,6 @@ import '../../../common/headers.dart';
 import '../../../model/text_completion_model.dart';
 
 class ChatTextController extends GetxController {
-  //TODO: Implement ChatTextController
 
   @override
   void onInit() {
@@ -29,6 +28,7 @@ class ChatTextController extends GetxController {
   List<TextCompletionData> messages = [];
 
   var state = ApiState.notFound.obs;
+  TextEditingController searchTextController = TextEditingController();
 
   void getTextCompletion(String query) async {
     addMyMessage();
@@ -39,8 +39,7 @@ class ChatTextController extends GetxController {
       bool isLegalQuestion = false;
       Map<String, dynamic> rowParams0 = {
         "model": "text-davinci-003",
-        // "prompt": 'can you check type of query: $query',
-        "prompt": "Determine the user's intend: $query",
+        "prompt": "Determine the user's intend: $query",//'can you check type of query: $query',
         "max_tokens": 200,
         "temperature": 0.5,
       };
@@ -54,9 +53,6 @@ class ChatTextController extends GetxController {
       );
       print("Response body ${response0.body}");
       if (response0.statusCode == 200) {
-        // messages =
-        //     TextCompletionModel.fromJson(json.decode(response.body)).choices;
-        //
         String body = response0.body;
         var appStorage = AppStorage();
         List<String> keys =
@@ -83,8 +79,6 @@ class ChatTextController extends GetxController {
           }
         }
         if (!isLegalQuestion) {
-          // String a =
-          //     '{"id":"cmpl-6wbwIXMvw3GmDBHB2w0FMGtUfCMIX","object":"text_completion","created":1679426882,"model":"text-davinci-003","choices":[{"text":"\n\nThis is not a type of query.","index":0,"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":8,"completion_tokens":10,"total_tokens":18}}';
           Map<String, dynamic> _data = json.decode(body);
           _data['choices'][0]['text'] =
               "Unfortunately, this is not a legal question and so I cannot provide an answer. If you have a legal question, please provide more details so that I can help.";
@@ -106,7 +100,7 @@ class ChatTextController extends GetxController {
       Map<String, dynamic> rowParams = {
         "model": "text-davinci-003",
         "prompt": 'Legal question: $query',
-        "max_tokens": 200,
+        "max_tokens": 500,
         "temperature": 0.5,
       };
 
@@ -155,5 +149,4 @@ class ChatTextController extends GetxController {
     searchTextController.clear();
   }
 
-  TextEditingController searchTextController = TextEditingController();
 }
